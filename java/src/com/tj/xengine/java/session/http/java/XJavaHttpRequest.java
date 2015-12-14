@@ -4,9 +4,6 @@ import com.tj.xengine.core.session.http.XBaseHttpRequest;
 import com.tj.xengine.core.session.http.XHttp;
 import com.tj.xengine.core.utils.XFileUtil;
 import com.tj.xengine.core.utils.XStringUtil;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +11,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -145,11 +140,8 @@ class XJavaHttpRequest extends XBaseHttpRequest {
                 request.setRequestProperty(XHttp.CONTENT_TYPE, contentType);
                 // 设置内容entity
                 OutputStream out = request.getOutputStream();
-                List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-                for (Map.Entry<String, String> entry : mStringParams.entrySet())
-                    parameters.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
                 String charset = getCharset() != null ? getCharset() : XHttp.DEF_CONTENT_CHARSET.name();
-                String content = URLEncodedUtils.format(parameters, charset);
+                String content = XJavaHttpUtil.format(mStringParams, charset);
                 out.write(content.getBytes(charset));
                 out.flush();
                 out.close();

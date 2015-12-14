@@ -2,7 +2,6 @@ package com.tj.xengine.java.session.http.java;
 
 import com.tj.xengine.core.session.http.XHttp;
 import com.tj.xengine.core.utils.XStringUtil;
-import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +9,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.util.Random;
+import java.util.*;
 
 /**
  * 用于生成XJavaHttpRequest的工具类。
@@ -28,32 +27,28 @@ public abstract class XJavaHttpUtil {
      */
     private final static char[] MULTIPART_CHARS =
             "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-    public static final ByteArrayBuffer FIELD_SEP = encode(XHttp.DEFAULT_CHARSET, ": ");
-    public static final ByteArrayBuffer CR_LF = encode(XHttp.DEFAULT_CHARSET, "\r\n");
-    public static final ByteArrayBuffer TWO_DASHES = encode(XHttp.DEFAULT_CHARSET, "--");
+    public static final byte[] FIELD_SEP = encode(XHttp.DEFAULT_CHARSET, ": ");
+    public static final byte[] CR_LF = encode(XHttp.DEFAULT_CHARSET, "\r\n");
+    public static final byte[] TWO_DASHES = encode(XHttp.DEFAULT_CHARSET, "--");
 
 
-    private static ByteArrayBuffer encode(final Charset charset, final String string) {
+    private static byte[] encode(final Charset charset, final String string) {
         ByteBuffer encoded = charset.encode(CharBuffer.wrap(string));
-        ByteArrayBuffer bab = new ByteArrayBuffer(encoded.remaining());
-        bab.append(encoded.array(), encoded.position(), encoded.remaining());
-        return bab;
+        return encoded.array();
     }
 
 
-    public static void writeBytes(final ByteArrayBuffer b, final OutputStream out) throws IOException {
-        out.write(b.buffer(), 0, b.length());
+    public static void writeBytes(final byte[] b, final OutputStream out) throws IOException {
+        out.write(b, 0, b.length);
     }
 
     public static void writeBytes(final String s, final Charset charset,
                                   final OutputStream out) throws IOException {
-        ByteArrayBuffer b = encode(charset, s);
-        writeBytes(b, out);
+        writeBytes(encode(charset, s), out);
     }
 
     public static void writeBytes(final String s, final OutputStream out) throws IOException {
-        ByteArrayBuffer b = encode(XHttp.DEFAULT_CHARSET, s);
-        writeBytes(b, out);
+        writeBytes(encode(XHttp.DEFAULT_CHARSET, s), out);
     }
 
     /**
@@ -167,4 +162,161 @@ public abstract class XJavaHttpUtil {
         return charset;
     }
 
+
+    /**
+     * Unreserved characters, i.e. alphanumeric, plus: {@code _ - ! . ~ ' ( ) *}
+     * <p>
+     *  This list is the same as the {@code unreserved} list in
+     *  <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>
+     */
+    private static final BitSet UNRESERVED   = new BitSet(256);
+    /**
+     * Punctuation characters: , ; : $ & + =
+     * <p>
+     * These are the additional characters allowed by userinfo.
+     */
+    private static final BitSet PUNCT        = new BitSet(256);
+    /** Characters which are safe to use in userinfo,
+     * i.e. {@link #UNRESERVED} plus {@link #PUNCT}uation */
+    private static final BitSet USERINFO     = new BitSet(256);
+    /** Characters which are safe to use in a path,
+     * i.e. {@link #UNRESERVED} plus {@link #PUNCT}uation plus / @ */
+    private static final BitSet PATHSAFE     = new BitSet(256);
+    /** Characters which are safe to use in a query or a fragment,
+     * i.e. {@link #RESERVED} plus {@link #UNRESERVED} */
+    private static final BitSet URIC     = new BitSet(256);
+    /**
+     * Reserved characters, i.e. {@code ;/?:@&=+$,[]}
+     * <p>
+     *  This list is the same as the {@code reserved} list in
+     *  <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>
+     *  as augmented by
+     *  <a href="http://www.ietf.org/rfc/rfc2732.txt">RFC 2732</a>
+     */
+    private static final BitSet RESERVED     = new BitSet(256);
+
+
+    /**
+     * Safe characters for x-www-form-urlencoded data, as per java.net.URLEncoder and browser behaviour,
+     * i.e. alphanumeric plus {@code "-", "_", ".", "*"}
+     */
+    private static final BitSet URLENCODER   = new BitSet(256);
+
+    static {
+        // unreserved chars
+        // alpha characters
+        for (int i = 'a'; i <= 'z'; i++) {
+            UNRESERVED.set(i);
+        }
+        for (int i = 'A'; i <= 'Z'; i++) {
+            UNRESERVED.set(i);
+        }
+        // numeric characters
+        for (int i = '0'; i <= '9'; i++) {
+            UNRESERVED.set(i);
+        }
+        UNRESERVED.set('_'); // these are the charactes of the "mark" list
+        UNRESERVED.set('-');
+        UNRESERVED.set('.');
+        UNRESERVED.set('*');
+        URLENCODER.or(UNRESERVED); // skip remaining unreserved characters
+        UNRESERVED.set('!');
+        UNRESERVED.set('~');
+        UNRESERVED.set('\'');
+        UNRESERVED.set('(');
+        UNRESERVED.set(')');
+        // punct chars
+        PUNCT.set(',');
+        PUNCT.set(';');
+        PUNCT.set(':');
+        PUNCT.set('$');
+        PUNCT.set('&');
+        PUNCT.set('+');
+        PUNCT.set('=');
+        // Safe for userinfo
+        USERINFO.or(UNRESERVED);
+        USERINFO.or(PUNCT);
+
+        // URL path safe
+        PATHSAFE.or(UNRESERVED);
+        PATHSAFE.set('/'); // segment separator
+        PATHSAFE.set(';'); // param separator
+        PATHSAFE.set(':'); // rest as per list in 2396, i.e. : @ & = + $ ,
+        PATHSAFE.set('@');
+        PATHSAFE.set('&');
+        PATHSAFE.set('=');
+        PATHSAFE.set('+');
+        PATHSAFE.set('$');
+        PATHSAFE.set(',');
+
+        RESERVED.set(';');
+        RESERVED.set('/');
+        RESERVED.set('?');
+        RESERVED.set(':');
+        RESERVED.set('@');
+        RESERVED.set('&');
+        RESERVED.set('=');
+        RESERVED.set('+');
+        RESERVED.set('$');
+        RESERVED.set(',');
+        RESERVED.set('['); // added by RFC 2732
+        RESERVED.set(']'); // added by RFC 2732
+
+        URIC.or(RESERVED);
+        URIC.or(UNRESERVED);
+    }
+    private static final int RADIX = 16;
+
+    private static String encodeFormFields(final String content, final String charset) {
+        if (content == null) {
+            return null;
+        }
+        return urlEncode(content, charset != null ? Charset.forName(charset) : XHttp.UTF_8, URLENCODER, true);
+    }
+
+    private static String urlEncode(final String content, final Charset charset,
+            final BitSet safechars, final boolean blankAsPlus) {
+        if (content == null) {
+            return null;
+        }
+        final StringBuilder buf = new StringBuilder();
+        final ByteBuffer bb = charset.encode(content);
+        while (bb.hasRemaining()) {
+            final int b = bb.get() & 0xff;
+            if (safechars.get(b)) {
+                buf.append((char) b);
+            } else if (blankAsPlus && b == ' ') {
+                buf.append('+');
+            } else {
+                buf.append("%");
+                final char hex1 = Character.toUpperCase(Character.forDigit((b >> 4) & 0xF, RADIX));
+                final char hex2 = Character.toUpperCase(Character.forDigit(b & 0xF, RADIX));
+                buf.append(hex1);
+                buf.append(hex2);
+            }
+        }
+        return buf.toString();
+    }
+
+    public static String format(final Map<String, String> parameters, final String charset) {
+        return format(parameters, '&', charset);
+    }
+
+    public static String format(final Map<String, String> parameters,
+            final char parameterSeparator, final String charset) {
+        final StringBuilder result = new StringBuilder();
+        for (final Map.Entry<String, String> parameter : parameters.entrySet()) {
+            final String encodedName = encodeFormFields(parameter.getKey(), charset);
+            final String encodedValue = encodeFormFields(parameter.getValue(), charset);
+            if (result.length() > 0) {
+                result.append(parameterSeparator);
+            }
+            result.append(encodedName);
+            if (encodedValue != null) {
+                result.append("=");
+                result.append(encodedValue);
+            }
+        }
+        return result.toString();
+    }
 }
