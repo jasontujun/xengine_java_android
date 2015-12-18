@@ -1,13 +1,14 @@
 package com.tj.xengine.java.download;
 
-import com.tj.xengine.core.session.http.XHttp;
+import com.tj.xengine.core.network.http.XHttp;
+import com.tj.xengine.core.network.http.XHttpConfig;
 import com.tj.xengine.core.toolkit.taskmgr.XMgrTaskExecutor;
 import com.tj.xengine.core.toolkit.taskmgr.XTaskMgrListener;
 import com.tj.xengine.core.toolkit.taskmgr.serial.XSerialMgr;
 import com.tj.xengine.core.toolkit.taskmgr.serial.XSerialMgrImpl;
 import com.tj.xengine.core.toolkit.taskmgr.serial.XSerialSpeedMonitor;
 import com.tj.xengine.core.utils.XStringUtil;
-import com.tj.xengine.java.session.http.java.XJavaHttpClient;
+import com.tj.xengine.java.network.http.java.XJavaHttpClient;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,13 +33,13 @@ public class XHttpDownloader {
     }
 
     public XHttpDownloader(String userAgent) {
-        mHttpClient = new XJavaHttpClient();
-        mHttpClient.setConfig(mHttpClient.getConfig()
+        mHttpClient = new XJavaHttpClient(XHttpConfig.builder()
                 .setUserAgent(userAgent)
                 .setConnectionTimeOut(60 * 1000)
                 .setResponseTimeOut(60 * 1000)
-                .setRedirect(true)
-                .setHandleCookie(true));
+                .setHandleRedirect(true)
+                .setHandleCookie(true)
+                .build());
         init();
     }
 
@@ -67,7 +68,7 @@ public class XHttpDownloader {
     }
 
     public void addTasks(List<String> urls, List<String> folders) {
-        List<XMgrTaskExecutor<XDownloadBean>> tasks = new ArrayList<>();
+        List<XMgrTaskExecutor<XDownloadBean>> tasks = new ArrayList<XMgrTaskExecutor<XDownloadBean>>();
         for (int i = 0; i < urls.size(); i++) {
             XDownloadBean bean = new XDownloadBean(urls.get(i), folders.get(i));
             tasks.add(new XHttpDownloadTask(bean, mHttpClient));
@@ -76,7 +77,7 @@ public class XHttpDownloader {
     }
 
     public void addTasks(List<String> urls, List<String> folders, List<String> fileNames) {
-        List<XMgrTaskExecutor<XDownloadBean>> tasks = new ArrayList<>();
+        List<XMgrTaskExecutor<XDownloadBean>> tasks = new ArrayList<XMgrTaskExecutor<XDownloadBean>>();
         for (int i = 0; i < urls.size(); i++) {
             XDownloadBean bean = new XDownloadBean(urls.get(i), folders.get(i), fileNames.get(i));
             tasks.add(new XHttpDownloadTask(bean, mHttpClient));

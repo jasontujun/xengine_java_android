@@ -1,6 +1,9 @@
 package com.tj.xengine.java.download;
 
-import com.tj.xengine.core.session.http.*;
+import com.tj.xengine.core.network.http.XHttp;
+import com.tj.xengine.core.network.http.XHttpRequest;
+import com.tj.xengine.core.network.http.XHttpResponse;
+import com.tj.xengine.core.network.http.XHttpUtil;
 import com.tj.xengine.core.toolkit.task.runnable.XFiniteRetryRunnable;
 import com.tj.xengine.core.toolkit.taskmgr.XBaseMgrTaskExecutor;
 import com.tj.xengine.core.utils.XStringUtil;
