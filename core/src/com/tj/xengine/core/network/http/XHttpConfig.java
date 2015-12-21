@@ -98,8 +98,8 @@ public final class XHttpConfig {
 
         Builder() {
             xhc = new XHttpConfig();
-            xhc.configs.put(KEY_CONNECTION_TIMEOUT, 30);
-            xhc.configs.put(KEY_RESPONSE_TIMEOUT, 30);
+            xhc.configs.put(KEY_CONNECTION_TIMEOUT, 60);
+            xhc.configs.put(KEY_RESPONSE_TIMEOUT, 60);
             xhc.configs.put(KEY_HANDLE_COOKIE, true);
             xhc.configs.put(KEY_HANDLE_REDIRECT, true);
             xhc.configs.put(KEY_MAX_REDIRECT, 30);

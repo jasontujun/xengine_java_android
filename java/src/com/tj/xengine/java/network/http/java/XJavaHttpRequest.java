@@ -6,9 +6,7 @@ import com.tj.xengine.core.network.http.XHttpConfig;
 import com.tj.xengine.core.utils.XFileUtil;
 import com.tj.xengine.core.utils.XStringUtil;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -23,6 +21,8 @@ import java.util.Map;
  * Time: 下午6:13
  */
 class XJavaHttpRequest extends XBaseHttpRequest {
+
+    private static final int BUFFER_SIZE = 32 * 1024;
 
     protected XJavaHttpRequest() {
         super();
@@ -153,6 +153,12 @@ class XJavaHttpRequest extends XBaseHttpRequest {
                 String boundary = XJavaHttpUtil.generateBoundary();
                 String contentType = XJavaHttpUtil.generateMultiContentType(boundary, getCharset());
                 request.setRequestProperty(XHttp.CONTENT_TYPE, contentType);
+                // 设置chunked模式
+                if (isChunked()) {
+                    request.setChunkedStreamingMode(0);// use default chunked size
+                } else {
+                    request.setFixedLengthStreamingMode(calTotalSize(boundary));
+                }
                 // 设置内容entity
                 OutputStream out = request.getOutputStream();
                 writeFileParams(out, boundary);
@@ -188,18 +194,18 @@ class XJavaHttpRequest extends XBaseHttpRequest {
     private void writeStringParams(OutputStream out, String boundary) {
         try {
             for (Map.Entry<String, String> entry : mStringParams.entrySet()) {
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.TWO_DASHES, out);
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.TWO_DASHES, out);//2
                 XJavaHttpUtil.writeBytes(boundary, out);
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);//2
                 XJavaHttpUtil.writeBytes(XHttp.CONTENT_DISPOSITION, out);
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.FIELD_SEP, out);
-                XJavaHttpUtil.writeBytes("form-data; name=\"", out);
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.FIELD_SEP, out);//2
+                XJavaHttpUtil.writeBytes("form-data; name=\"", out);//17
                 XJavaHttpUtil.writeBytes(entry.getKey(), out);
-                XJavaHttpUtil.writeBytes("\"", out);
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);
+                XJavaHttpUtil.writeBytes("\"", out);//1
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);//2
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);//2
                 XJavaHttpUtil.writeBytes(entry.getValue(), out);
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);//2
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -211,24 +217,31 @@ class XJavaHttpRequest extends XBaseHttpRequest {
         try {
             for (Map.Entry<String, File> entry : mFileParams.entrySet()) {
                 File file = entry.getValue();
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.TWO_DASHES, out);
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.TWO_DASHES, out);//2
                 XJavaHttpUtil.writeBytes(boundary, out);
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);//2
                 XJavaHttpUtil.writeBytes(XHttp.CONTENT_DISPOSITION, out);
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.FIELD_SEP, out);
-                XJavaHttpUtil.writeBytes("form-data; name=\"", out);
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.FIELD_SEP, out);//2
+                XJavaHttpUtil.writeBytes("form-data; name=\"", out);//17
                 XJavaHttpUtil.writeBytes(entry.getKey(), out);
-                XJavaHttpUtil.writeBytes("\"; filename=\"", out);
+                XJavaHttpUtil.writeBytes("\"; filename=\"", out);//13
                 XJavaHttpUtil.writeBytes(file.getName(), out);
-                XJavaHttpUtil.writeBytes("\"", out);
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);
+                XJavaHttpUtil.writeBytes("\"", out);//1
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);//2
                 XJavaHttpUtil.writeBytes(XHttp.CONTENT_TYPE, out);
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.FIELD_SEP, out);
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.FIELD_SEP, out);//2
                 XJavaHttpUtil.writeBytes(XJavaHttpUtil.generatePostFileContentType(file), out);
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);
-                out.write(XFileUtil.file2byte(file));
-                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);//2
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);//2
+                // [start]write file
+                FileInputStream fis = new FileInputStream(file);
+                byte[] buf = new byte[BUFFER_SIZE];
+                int len;
+                while ((len = fis.read(buf)) != -1) {
+                    out.write(buf, 0, len);
+                }
+                // [end]write file
+                XJavaHttpUtil.writeBytes(XJavaHttpUtil.CR_LF, out);//2
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -246,5 +259,36 @@ class XJavaHttpRequest extends XBaseHttpRequest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private long calTotalSize(String boundary) {
+        long result = 0;
+        final int fileDecorateSize = boundary.length() + XJavaHttpUtil.TWO_DASHES.length
+                + 5*XJavaHttpUtil.CR_LF.length + XHttp.CONTENT_DISPOSITION.length()
+                + 2*XJavaHttpUtil.FIELD_SEP.length + 31 + XHttp.CONTENT_TYPE.length();
+        final int stringDecorateSize = boundary.length() + XJavaHttpUtil.TWO_DASHES.length
+                + 4*XJavaHttpUtil.CR_LF.length + XHttp.CONTENT_DISPOSITION.length()
+                + XJavaHttpUtil.FIELD_SEP.length + 18;
+        final int endDecorateSize = boundary.length() + 2*XJavaHttpUtil.TWO_DASHES.length + 2*XJavaHttpUtil.CR_LF.length;
+        for (Map.Entry<String, File> entry : mFileParams.entrySet()) {
+            String key = entry.getKey();
+            File file = entry.getValue();
+            result = result + fileDecorateSize
+                    + key.length()
+                    + file.getName().length()
+                    + XJavaHttpUtil.generatePostFileContentType(file).length()
+                    + file.length();
+        }
+        for (Map.Entry<String, String> entry : mStringParams.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            result = result + stringDecorateSize
+                    + key.length()
+                    + value.length();
+        }
+        if (mFileParams.size() > 0 && mStringParams.size() >0) {
+            result = result + endDecorateSize;
+        }
+        return result;
     }
 }
