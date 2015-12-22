@@ -173,8 +173,8 @@ class XJavaHttpRequest extends XBaseHttpRequest {
                 writeFileParams(out, boundary);
                 if (mStringParams.size() > 0) {
                     writeStringParams(out, boundary);
-                    writeEndParams(out, boundary);
                 }
+                writeEndParams(out, boundary);
                 out.flush();
             }
             // 只有字符串参数，Content-Type:application/x-www-form-urlencoded
