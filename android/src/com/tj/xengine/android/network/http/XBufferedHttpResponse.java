@@ -81,6 +81,11 @@ public class XBufferedHttpResponse implements XHttpResponse {
         return true;
     }
 
+    @Override
+    public List<String> getRedirectLocations() {
+        return mResponseWrapper.getRedirectLocations();
+    }
+
     private static byte[] toByteArray(final InputStream inStream,
                                      final long contentLength) throws IOException {
         if (inStream == null) {

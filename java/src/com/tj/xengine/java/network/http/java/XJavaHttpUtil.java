@@ -54,9 +54,9 @@ public abstract class XJavaHttpUtil {
     /**
      * 生成Http消息头中的ContentType的值。
      * Content-Type为multipart/form-data
-     * @param boundary
-     * @param charset
-     * @return
+     * @param boundary 分割字符串
+     * @param charset 字符编码
+     * @return 返回对应的ContentType字符串
      */
     public static String generateMultiContentType(final String boundary, final String charset) {
         StringBuilder buffer = new StringBuilder();
@@ -72,10 +72,10 @@ public abstract class XJavaHttpUtil {
     /**
      * 生成Post类型带字符串内容Http消息头中的ContentType的值
      * Content-Type为application/x-www-form-urlencoded
-     * @param charset
-     * @return
+     * @param charset 字符编码
+     * @return 返回对应的ContentType字符串
      */
-    public static String generatePostStringContentType(final String charset) {
+    public static String generateStringContentType(final String charset) {
         StringBuilder buffer = new StringBuilder();
         buffer.append("application/x-www-form-urlencoded");
         if (charset != null) {
@@ -86,37 +86,35 @@ public abstract class XJavaHttpUtil {
     }
 
     /**
-     * 生成Post类型带文件内容ContentType的值，图片格式为image/png,image/jpg等。
-     * 非图片为application/octet-stream
-     * @param f
-     * @return
+     * 生成Post类型带文件内容ContentType的值。
+     * 图片格式为image/png,image/jpg等。
+     * 音频格式为audio/mpeg,audio/mp4等。
+     * 默认为application/octet-stream。
+     * @param f 文件
+     * @return 返回对应的ContentType字符串
      */
-    public static String generatePostFileContentType(File f) {
+    public static String generateFileContentType(File f) {
         int dotIndex = f.getAbsolutePath().lastIndexOf(".");
         if (dotIndex < 0) {
             return "application/octet-stream";
         }
 
         String suffix = f.getAbsolutePath().substring(dotIndex).toLowerCase();
-        if ("jpg".equals(suffix)
-                || "jpeg".equals(suffix))
+        if ("jpg".equals(suffix) || "jpeg".equals(suffix))
             return "image/jpeg";
-        else if ("png".equals(suffix)
-                || "gif".equals(suffix))
+        else if ("png".equals(suffix) || "gif".equals(suffix))
             return "image/" + suffix;
-        else if ("mp3".equals(suffix)
-                || "mpeg".equals(suffix))
+        else if ("mp3".equals(suffix) || "mpeg".equals(suffix))
             return "audio/mpeg";
-        else if ("mp4".equals(suffix)
-                || "ogg".equals(suffix))
+        else if ("mp4".equals(suffix) || "ogg".equals(suffix))
             return "audio/" + suffix;
-
-        return "application/octet-stream";
+        else
+            return "application/octet-stream";
     }
 
     /**
      * 生成一个随机的Boundary字符串
-     * @return
+     * @return 返回Boundary字符串
      */
     public static String generateBoundary() {
         StringBuilder buffer = new StringBuilder();
@@ -133,7 +131,7 @@ public abstract class XJavaHttpUtil {
      * text/html;charset=ISO-8859-1
      * application/x-www-form-urlencoded;charset=UTF-8
      * @param contentTypeValue Content-Type的值
-     * @return
+     * @return 返回Content-Type中指定的字符编码;解析失败返回null
      */
     public static Charset getResponseCharset(String contentTypeValue) {
         if (XStringUtil.isEmpty(contentTypeValue))

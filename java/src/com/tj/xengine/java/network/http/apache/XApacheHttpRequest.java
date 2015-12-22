@@ -11,12 +11,13 @@ import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
@@ -79,7 +80,20 @@ class XApacheHttpRequest extends XBaseHttpRequest {
             MultipartEntityBuilder reqEntityBuilder = MultipartEntityBuilder.create()
                     .setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
             for (Map.Entry<String, File> fileParam : mFileParams.entrySet()) {
-                reqEntityBuilder.addPart(fileParam.getKey(), new FileBody(fileParam.getValue()));
+                File file = fileParam.getValue();
+                ContentBody partBody = null;
+                if (isChunked()) {
+                    try {
+                        partBody = new InputStreamBody(new FileInputStream(file),
+                                generateFileContentType(file), file.getName());
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        return null;// error! cannot create request because cannot open file
+                    }
+                } else {
+                    partBody = new FileBody(file, generateFileContentType(file));
+                }
+                reqEntityBuilder.addPart(fileParam.getKey(), partBody);
             }
             if (mStringParams.size() > 0) {
                 for (Map.Entry<String, String> strParam : mStringParams.entrySet()) {
@@ -117,5 +131,32 @@ class XApacheHttpRequest extends XBaseHttpRequest {
             }
         }
         return request;
+    }
+
+    /**
+     * 生成Post类型带文件内容ContentType的值。
+     * 图片格式为image/png,image/jpg等。
+     * 音频格式为audio/mpeg,audio/mp4等。
+     * 默认为application/octet-stream。
+     * @param f 文件
+     * @return 返回对应的ContentType
+     */
+    private static ContentType generateFileContentType(File f) {
+        int dotIndex = f.getAbsolutePath().lastIndexOf(".");
+        if (dotIndex < 0) {
+            return ContentType.DEFAULT_BINARY;
+        }
+
+        String suffix = f.getAbsolutePath().substring(dotIndex).toLowerCase();
+        if ("jpg".equals(suffix) || "jpeg".equals(suffix))
+            return ContentType.create("image/jpeg");
+        else if ("png".equals(suffix) || "gif".equals(suffix))
+            return ContentType.create("image/" + suffix);
+        else if ("mp3".equals(suffix) || "mpeg".equals(suffix))
+            return ContentType.create("audio/mpeg");
+        else if ("mp4".equals(suffix) || "ogg".equals(suffix))
+            return ContentType.create("audio/" + suffix);
+        else
+            return ContentType.DEFAULT_BINARY;
     }
 }
