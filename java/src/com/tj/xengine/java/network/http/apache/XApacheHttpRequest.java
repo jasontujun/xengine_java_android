@@ -8,6 +8,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -42,16 +43,37 @@ class XApacheHttpRequest extends XBaseHttpRequest {
             return null;
         switch (getMethod()) {
             case GET:
-                return createGetStyleRequest(new HttpGet(getUrl()));
+                return createGetStyleRequest(new HttpGet(urlAddParam(getUrl())));
             case POST:
                 return createPostStyleRequest(new HttpPost(getUrl()));
             case PUT:
                 return createPostStyleRequest(new HttpPut(getUrl()));
             case DELETE:
-                return createGetStyleRequest(new HttpDelete(getUrl()));
+                return createGetStyleRequest(new HttpDelete(urlAddParam(getUrl())));
             default:
                 return null;
         }
+    }
+
+    private String urlAddParam(String url) {
+        if (mStringParams.size() > 0) {
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            for (Map.Entry<String, String> strParam : mStringParams.entrySet())
+                params.add(new BasicNameValuePair(strParam.getKey(), strParam.getValue()));
+            String paramStr = URLEncodedUtils.format(params, (String)null);
+            if (!XStringUtil.isEmpty(paramStr)) {
+                if (url.contains("?")) {
+                    if (url.endsWith("?")) {
+                        url = url + paramStr;
+                    } else {
+                        url = url + "&" + paramStr;
+                    }
+                } else {
+                    url = url + "?" + paramStr;
+                }
+            }
+        }
+        return url;
     }
 
     private HttpRequest createGetStyleRequest(HttpRequestBase request) {

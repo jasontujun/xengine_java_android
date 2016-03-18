@@ -85,6 +85,20 @@ class XJavaHttpRequest extends XBaseHttpRequest {
     private HttpURLConnection createGetStyleRequest(String method, String url, XHttpConfig config) {
         try {
             Proxy proxy = getProxy(config);
+            if (mStringParams.size() > 0) {
+                String paramStr = XJavaHttpUtil.format(mStringParams, null);
+                if (!XStringUtil.isEmpty(paramStr)) {
+                    if (url.contains("?")) {
+                        if (url.endsWith("?")) {
+                            url = url + paramStr;
+                        } else {
+                            url = url + "&" + paramStr;
+                        }
+                    } else {
+                        url = url + "?" + paramStr;
+                    }
+                }
+            }
             URL requestUrl = new URL(url);
             HttpURLConnection request = (HttpURLConnection) (proxy == null ?
                     requestUrl.openConnection() : requestUrl.openConnection(proxy));
