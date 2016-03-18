@@ -59,9 +59,9 @@ public abstract class XBaseHttpRequest implements XHttpRequest {
     }
 
     @Override
-    public boolean setCharset(String charsetName) {
+    public XHttpRequest setCharset(String charsetName) {
         mCharsetName = charsetName;
-        return Charset.isSupported(mCharsetName);
+        return this;
     }
 
     @Override

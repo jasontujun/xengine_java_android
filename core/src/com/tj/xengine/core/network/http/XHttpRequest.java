@@ -47,9 +47,9 @@ public interface XHttpRequest {
 
     /**
      * 设置请求的字符编码
-     * @return 如果字符编码支持，返回true；否则返回false
+     * @return
      */
-    boolean setCharset(String charsetName);
+    XHttpRequest setCharset(String charsetName);
 
     /**
      * 获取该请求的字符编码
