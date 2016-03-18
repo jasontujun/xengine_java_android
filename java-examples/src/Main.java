@@ -37,7 +37,7 @@ public class Main {
 //                .setUserAgent("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36")
 //                .build());
         XHttpRequest request = httpClient.newRequest(url)
-                .setMethod(XHttpRequest.HttpMethod.GET)
+                .setMethod(XHttpRequest.Method.GET)
                 .setConfig(XHttpConfig.builder()
 //                        .setProxy(new XProxy() {
 //                            @Override
@@ -112,7 +112,7 @@ public class Main {
                 .setResponseTimeOut(60 * 1000)
                 .build());
         XHttpRequest request = httpClient.newRequest("http://127.0.0.1:3000/test/upload")
-                .setMethod(XHttpRequest.HttpMethod.POST)
+                .setMethod(XHttpRequest.Method.POST)
                 .setChunked(true)
                 .addStringParam("test_text", "abc")
                 .addFileParam("test_file", new File("H:\\服务器域名.txt"))

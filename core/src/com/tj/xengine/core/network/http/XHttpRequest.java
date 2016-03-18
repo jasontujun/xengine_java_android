@@ -11,7 +11,7 @@ import java.io.File;
  */
 public interface XHttpRequest {
 
-    enum HttpMethod {
+    enum Method {
         GET,
         POST,
         PUT,
@@ -33,17 +33,17 @@ public interface XHttpRequest {
 
     /**
      * 设置请求的类型，默认是GET请求
-     * @see HttpMethod
+     * @see Method
      * @param method
      */
-    XHttpRequest setMethod(HttpMethod method);
+    XHttpRequest setMethod(Method method);
 
     /**
      * 获取请求的类型
-     * @see HttpMethod
+     * @see Method
      * @return
      */
-    HttpMethod getMethod();
+    Method getMethod();
 
     /**
      * 设置请求的字符编码

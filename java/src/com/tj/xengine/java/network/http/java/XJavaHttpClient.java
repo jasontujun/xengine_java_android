@@ -4,7 +4,6 @@ import com.tj.xengine.core.network.http.*;
 import com.tj.xengine.core.utils.XStringUtil;
 import com.tj.xengine.java.utils.XLog;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
 import java.nio.charset.Charset;
@@ -174,11 +173,11 @@ public class XJavaHttpClient extends XBaseHttp {
         mCookieStore.removeAll();
     }
 
-    private boolean isRedirect(XHttpRequest.HttpMethod method, int statusCode) {
+    private boolean isRedirect(XHttpRequest.Method method, int statusCode) {
         switch (statusCode) {
             case HttpURLConnection.HTTP_MOVED_TEMP:
             case HttpURLConnection.HTTP_MOVED_PERM:
-                return method == XHttpRequest.HttpMethod.GET;
+                return method == XHttpRequest.Method.GET;
             case HttpURLConnection.HTTP_SEE_OTHER:
                 return true;
             default:

@@ -1,7 +1,6 @@
 package com.tj.xengine.core.network.http;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +14,7 @@ import java.util.Map;
  */
 public abstract class XBaseHttpRequest implements XHttpRequest {
     private String mUrl;
-    private HttpMethod mMethod;
+    private Method mMethod;
     private String mCharsetName;
     private boolean mChunked;
     private boolean mGzip;
@@ -25,7 +24,7 @@ public abstract class XBaseHttpRequest implements XHttpRequest {
     protected Map<String, String> mHeaders;
 
     protected XBaseHttpRequest() {
-        mMethod = HttpMethod.GET;
+        mMethod = Method.GET;
         mStringParams = new HashMap<String, String>();
         mFileParams = new HashMap<String, File>();
         mHeaders = new HashMap<String, String>();
@@ -43,12 +42,12 @@ public abstract class XBaseHttpRequest implements XHttpRequest {
     }
 
     @Override
-    public HttpMethod getMethod() {
+    public Method getMethod() {
         return mMethod;
     }
 
     @Override
-    public XHttpRequest setMethod(HttpMethod method) {
+    public XHttpRequest setMethod(Method method) {
         mMethod = method;
         return this;
     }

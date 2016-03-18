@@ -212,7 +212,7 @@ public class XHttpDownloadTask extends XBaseMgrTaskExecutor<XDownloadBean> {
             }
             XLog.log(TAG, "已经下载大小(起始位置):" + downloadSize);
             XHttpRequest request = mHttpClient.newRequest(bean.getUrl())
-                    .setMethod(XHttpRequest.HttpMethod.GET);
+                    .setMethod(XHttpRequest.Method.GET);
             if (downloadSize != 0) {
                 request.addHeader("Range", "bytes=" + downloadSize + "-");
             }
