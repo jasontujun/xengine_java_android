@@ -3,6 +3,9 @@ package com.tj.xengine.core.network.http;
 import java.net.HttpCookie;
 import java.nio.charset.Charset;
 
+/**
+ * 同步Http客户端接口。
+ */
 public interface XHttp {
 
     Charset UTF_8 = Charset.forName("UTF-8");
