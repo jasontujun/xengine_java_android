@@ -7,6 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -175,21 +176,45 @@ public abstract class XStringUtil {
     }
 
     /**
-     * 将字符串数组转化为用逗号连接的字符串
-     * @param values
+     * 将对象数组转化为指定连接符连接而成的字符串。
+     * 实际上会调用对象的toString()方法。
+     * @param values 字符串数组
+     * @param connector 连接符
      * @return
      */
-    public static String array2String(String[] values) {
-        String result = "";
-        if (values != null) {
-            if (values.length > 0) {
-                for (String value : values) {
-                    result += value + ",";
-                }
-                result = result.substring(0, result.length() - 1);
+    public static String array2String(Object[] values, String connector) {
+        if (values == null || values.length == 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < values.length; i++) {
+            sb.append(values[i].toString());
+            if (connector != null && i < values.length - 1) {
+                sb.append(connector);
             }
         }
-        return result;
+        return sb.toString();
+    }
+
+    /**
+     * 将对象列表转化为指定连接符连接而成的字符串。
+     * 实际上会调用对象的toString()方法。
+     * @param values 字符串数组
+     * @param connector 连接符
+     * @return
+     */
+    public static String list2String(List values, String connector) {
+        if (values == null || values.size() == 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < values.size(); i++) {
+            sb.append(values.get(i).toString());
+            if (connector != null && i < values.size() - 1) {
+                sb.append(connector);
+            }
+        }
+        return sb.toString();
     }
 
     /**
