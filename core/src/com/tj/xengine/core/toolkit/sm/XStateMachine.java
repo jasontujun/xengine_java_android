@@ -4,9 +4,10 @@ import java.util.List;
 
 /**
  * 通用状态机的接口。
+ * T代表State的类型。
  * Created by jasontujun on 2015/3/21.
  */
-public interface XStateMachine {
+public interface XStateMachine<T> {
 
     /**
      * 初始化状态机。
@@ -15,7 +16,7 @@ public interface XStateMachine {
      * @param endState 终止状态(可以为空)
      * @param states 状态机中所有的状态
      */
-	boolean init(String startState, String endState, String[] states);
+	boolean init(T startState, T endState, T[] states);
 
     /**
      * 终止状态机。停止并将状态设置成结束状态。
@@ -32,7 +33,7 @@ public interface XStateMachine {
      * 如果状态机已达到终止状态，意味着状态机已停止，则action会被直接忽略。
      * @param action 单个动作
      */
-	boolean act(XAction action);
+	boolean act(XAction<T> action);
 
     /**
      * 触发一系列动作，从而尝试让状态机进入下一个状态。
@@ -41,11 +42,11 @@ public interface XStateMachine {
      * 如果状态机已达到终止状态，意味着状态机已停止，则后续的action会被直接忽略。
      * @param actions 动作链
      */
-    boolean act(List<XAction> actions);
+    boolean act(List<XAction<T>> actions);
 
     /**
      * 获取当前状态。
      * @return 返回当前状态，有可能为null。
      */
-	String getCurrentState();
+	T getCurrentState();
 }

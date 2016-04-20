@@ -3,11 +3,11 @@ package com.tj.xengine.core.toolkit.sm;
 
 /**
  * 动作的接口。
- * 表示状态机中的动作元素。
+ * 表示状态机中的动作元素，T代表State的类型。。
  * 动作在执行前状态机需要满足前置状态，执行后需要让状态机进入后置状态。
  * Created by jasontujun on 2015/3/21.
  */
-public interface XAction {
+public interface XAction<T> {
 
     /**
      * 前置条件被满足时，会调用此方法，此方法中包含实际执行的操作。
@@ -28,11 +28,11 @@ public interface XAction {
      * 获取该动作的前置状态
      * @return 返回该动作的前置状态
      */
-	String getPreState();
+	T getPreState();
 
     /**
      * 获取该动作的后置状态
      * @return 返回该动作的后置状态
      */
-	String getPostState();
+	T getPostState();
 }

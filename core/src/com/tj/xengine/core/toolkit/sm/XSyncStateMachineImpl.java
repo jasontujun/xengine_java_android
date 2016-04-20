@@ -9,22 +9,22 @@ import java.util.concurrent.*;
  * 同步执行的通用状态机。
  * Created by jasontujun on 2016/4/20.
  */
-public class XSyncStateMachineImpl implements XStateMachine {
+public class XSyncStateMachineImpl<T> implements XStateMachine<T> {
 
-    private String mStartState;
-    private String mEndState;
-    private volatile String mCurrentState;// 当前状态
-    private Set<String> mStates;// 状态集合
+    private T mStartState;
+    private T mEndState;
+    private volatile T mCurrentState;// 当前状态
+    private Set<T> mStates;// 状态集合
 
     public XSyncStateMachineImpl() {
-        mStates = new HashSet<String>();
+        mStates = new HashSet<T>();
         mCurrentState = null;
     }
 
     @Override
-    public boolean init(String startState,
-                        String endState,
-                        String[] states) {
+    public boolean init(T startState,
+                        T endState,
+                        T[] states) {
         // 清空集合和当前状态
         mStates.clear();
         mCurrentState = null;
@@ -32,7 +32,7 @@ public class XSyncStateMachineImpl implements XStateMachine {
         // 初始化状态集合
         mStartState = startState;
         mEndState = endState;
-        for (String state : states) {
+        for (T state : states) {
             if (state != null) {
                 mStates.add(state);
             }
@@ -66,7 +66,7 @@ public class XSyncStateMachineImpl implements XStateMachine {
     }
 
     @Override
-    public synchronized boolean act(XAction action) {
+    public synchronized boolean act(XAction<T> action) {
         if (action == null) {
             return false;
         }
@@ -77,8 +77,8 @@ public class XSyncStateMachineImpl implements XStateMachine {
             // 状态机已终止
             return false;
         }
-        final String preState = action.getPreState();
-        final String postState = action.getPostState();
+        final T preState = action.getPreState();
+        final T postState = action.getPostState();
         // 检验该action的前置后置状态是否在此状态机中
         if (!mStates.contains(preState) || !mStates.contains(postState)) {
             action.reject();// 通知action的监听者该action不执行
@@ -100,17 +100,17 @@ public class XSyncStateMachineImpl implements XStateMachine {
     }
 
     @Override
-    public synchronized boolean act(List<XAction> actions) {
+    public synchronized boolean act(List<XAction<T>> actions) {
         if (actions == null || actions.size() == 0) {
             return false;
         }
         if (mCurrentState == null) {// 状态机未初始化
             return false;
         }
-        String preState;
-        String postState;
+        T preState;
+        T postState;
         boolean result = false;
-        for (XAction action : actions) {
+        for (XAction<T> action : actions) {
             if (mEndState != null && mEndState.equals(mCurrentState)) {
                 // 状态机已终止
                 return result;
@@ -139,7 +139,7 @@ public class XSyncStateMachineImpl implements XStateMachine {
     }
 
     @Override
-    public String getCurrentState() {
+    public T getCurrentState() {
         return mCurrentState;
     }
 

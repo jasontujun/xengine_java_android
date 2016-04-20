@@ -9,31 +9,31 @@ import java.util.concurrent.*;
  * 异步执行的通用状态机。
  * Created by jasontujun on 2015/3/21.
  */
-public class XAsyncStateMachineImpl implements XAsyncStateMachine {
+public class XAsyncStateMachineImpl<T> implements XAsyncStateMachine<T> {
 
-    private String mStartState;
-    private String mEndState;
-    private volatile String mCurrentState;// 当前状态
+    private T mStartState;
+    private T mEndState;
+    private volatile T mCurrentState;// 当前状态
     private final Object currentStateLock = new Object();// 针对mCurrentState的修改
-    private Set<String> mStates;// 状态集合
+    private Set<T> mStates;// 状态集合
     private WorkerRunnable mActionWorker;// 工作线程(负责等待和执行动作)
-    private BlockingQueue<XAction> mActionQueue;// 未执行动作的缓存队列
-    private List<Listener> mListeners;// 外部监听者
+    private BlockingQueue<XAction<T>> mActionQueue;// 未执行动作的缓存队列
+    private List<Listener<T>> mListeners;// 外部监听者
 
     private ExecutorService mThreadPool;
 
     public XAsyncStateMachineImpl() {
-        mStates = new HashSet<String>();
+        mStates = new HashSet<T>();
         mCurrentState = null;
         mActionWorker = null;
-        mActionQueue = new LinkedBlockingQueue<XAction>();
-        mListeners = new CopyOnWriteArrayList<Listener>();
+        mActionQueue = new LinkedBlockingQueue<XAction<T>>();
+        mListeners = new CopyOnWriteArrayList<Listener<T>>();
     }
 
     @Override
-    public boolean init(String startState,
-                                     String endState,
-                                     String[] states) {
+    public boolean init(T startState,
+                        T endState,
+                        T[] states) {
         // 如果状态机已启动,则直接返回
         if (mActionWorker != null)
             return false;
@@ -45,7 +45,7 @@ public class XAsyncStateMachineImpl implements XAsyncStateMachine {
         // 初始化状态集合
         mStartState = startState;
         mEndState = endState;
-        for (String state : states) {
+        for (T state : states) {
             if (state != null) {
                 mStates.add(state);
             }
@@ -129,7 +129,7 @@ public class XAsyncStateMachineImpl implements XAsyncStateMachine {
     }
 
     @Override
-    public synchronized boolean act(XAction action) {
+    public synchronized boolean act(XAction<T> action) {
         if (action == null) {
             return false;
         }
@@ -138,7 +138,7 @@ public class XAsyncStateMachineImpl implements XAsyncStateMachine {
     }
 
     @Override
-    public synchronized boolean act(List<XAction> actions) {
+    public synchronized boolean act(List<XAction<T>> actions) {
         if (actions == null || actions.size() == 0) {
             return false;
         }
@@ -151,18 +151,18 @@ public class XAsyncStateMachineImpl implements XAsyncStateMachine {
     }
 
     @Override
-    public String getCurrentState() {
+    public T getCurrentState() {
         return mCurrentState;
     }
 
     @Override
-    public void registerListener(Listener listener) {
+    public void registerListener(Listener<T> listener) {
         if (!mListeners.contains(listener))
             mListeners.add(listener);
     }
 
     @Override
-    public void unregisterListener(Listener listener) {
+    public void unregisterListener(Listener<T> listener) {
         mListeners.remove(listener);
     }
 
@@ -191,9 +191,9 @@ public class XAsyncStateMachineImpl implements XAsyncStateMachine {
             try {
                 while (isRunning) {
                     // 阻塞获取下一个action
-                    XAction action = mActionQueue.take();
-                    final String preState = action.getPreState();
-                    final String postState = action.getPostState();
+                    XAction<T> action = mActionQueue.take();
+                    final T preState = action.getPreState();
+                    final T postState = action.getPostState();
                     // 线程被暂停结束
                     if (!isRunning) {
                         break;
@@ -220,7 +220,7 @@ public class XAsyncStateMachineImpl implements XAsyncStateMachine {
                         if (result) {
                             mCurrentState = postState;
                             // 通知状态的监听者(可以不直接回调，通过消息队列让实际回调在另一个线程)
-                            for (Listener listener : mListeners)
+                            for (Listener<T> listener : mListeners)
                                 listener.onState(postState, action, XAsyncStateMachineImpl.this);
                             // 如果后置状态是IState.END，意味着状态机执行完毕，则停止整个状态机
                             if (mEndState != null && mEndState.equals(postState)) {

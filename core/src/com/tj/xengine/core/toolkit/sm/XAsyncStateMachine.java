@@ -6,12 +6,12 @@ import java.util.List;
  * 通用状态机的接口。
  * Created by jasontujun on 2015/3/21.
  */
-public interface XAsyncStateMachine extends XStateMachine {
+public interface XAsyncStateMachine<T> extends XStateMachine<T> {
 
     /**
      * 状态机的针对状态变化的监听接口
      */
-    interface Listener {
+    interface Listener<T> {
 
         /**
          * 当状态机发生状态转变时，会回调此方法。
@@ -19,7 +19,7 @@ public interface XAsyncStateMachine extends XStateMachine {
          * @param action 导致这个状态发生的动作
          * @param sm 状态机对象实例
          */
-        void onState(String state, XAction action, XAsyncStateMachine sm);
+        void onState(T state, XAction<T> action, XAsyncStateMachine<T> sm);
     }
 
     /**
@@ -36,11 +36,11 @@ public interface XAsyncStateMachine extends XStateMachine {
      * 注册监听
      * @param listener
      */
-    void registerListener(Listener listener);
+    void registerListener(Listener<T> listener);
 
     /**
      * 取消注册监听
      * @param listener
      */
-    void unregisterListener(Listener listener);
+    void unregisterListener(Listener<T> listener);
 }
