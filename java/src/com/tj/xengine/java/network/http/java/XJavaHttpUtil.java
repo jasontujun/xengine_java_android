@@ -303,17 +303,20 @@ public abstract class XJavaHttpUtil {
     public static String format(final Map<String, String> parameters,
             final char parameterSeparator, final String charset) {
         final StringBuilder result = new StringBuilder();
+        String encodedName;
+        String encodedValue;
         for (final Map.Entry<String, String> parameter : parameters.entrySet()) {
-            final String encodedName = encodeFormFields(parameter.getKey(), charset);
-            final String encodedValue = encodeFormFields(parameter.getValue(), charset);
+            encodedName = encodeFormFields(parameter.getKey(), charset);
+            encodedValue = encodeFormFields(parameter.getValue(), charset);
+            // 如果参数的值为空，则忽略该参数
+            if (XStringUtil.isEmpty(encodedValue))
+                continue;
             if (result.length() > 0) {
                 result.append(parameterSeparator);
             }
             result.append(encodedName);
-            if (encodedValue != null) {
-                result.append("=");
-                result.append(encodedValue);
-            }
+            result.append("=");
+            result.append(encodedValue);
         }
         return result.toString();
     }
