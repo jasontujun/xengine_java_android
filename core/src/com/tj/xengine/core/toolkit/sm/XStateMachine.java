@@ -9,36 +9,13 @@ import java.util.List;
 public interface XStateMachine {
 
     /**
-     * 状态机的针对状态变化的监听接口
-     */
-    interface Listener {
-
-        /**
-         * 当状态机发生状态转变时，会回调此方法。
-         * @param state 状态机转变后最新的状态
-         * @param action 导致这个状态发生的动作
-         * @param sm 状态机对象实例
-         */
-        void onState(String state, XAction action, XStateMachine sm);
-    }
-
-    /**
      * 初始化状态机。
+     * 如果没有指定endState，则状态机永远不会进入终止状态。
      * @param startState 起始状态
-     * @param endState 终止状态
+     * @param endState 终止状态(可以为空)
      * @param states 状态机中所有的状态
      */
 	boolean init(String startState, String endState, String[] states);
-
-    /**
-     * 启动状态机。
-     */
-	void start();
-
-    /**
-     * 暂停状态机。
-     */
-	void pause();
 
     /**
      * 终止状态机。停止并将状态设置成结束状态。
@@ -52,18 +29,16 @@ public interface XStateMachine {
 
     /**
      * 触发单个动作，从而尝试让状态机进入下一个状态。
-     * @param action
+     * 如果状态机已达到终止状态，意味着状态机已停止，则action会被直接忽略。
+     * @param action 单个动作
      */
 	boolean act(XAction action);
 
     /**
      * 触发一系列动作，从而尝试让状态机进入下一个状态。
-     * @param actions 动作链
-     */
-    boolean act(XAction[] actions);
-
-    /**
-     * 触发一系列动作，从而尝试让状态机进入下一个状态。
+     * 多个动作会按照List中的顺序被依次执行，
+     * 但中间任意action执行失败，不会影响后门的action被执行。
+     * 如果状态机已达到终止状态，意味着状态机已停止，则后续的action会被直接忽略。
      * @param actions 动作链
      */
     boolean act(List<XAction> actions);
@@ -73,16 +48,4 @@ public interface XStateMachine {
      * @return 返回当前状态，有可能为null。
      */
 	String getCurrentState();
-
-    /**
-     * 注册监听
-     * @param listener
-     */
-    void registerListener(Listener listener);
-
-    /**
-     * 取消注册监听
-     * @param listener
-     */
-    void unregisterListener(Listener listener);
 }

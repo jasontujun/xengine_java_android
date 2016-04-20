@@ -6,15 +6,15 @@ import java.util.Set;
 import java.util.concurrent.*;
 
 /**
- * 通用状态机的是实现类。
+ * 异步执行的通用状态机。
  * Created by jasontujun on 2015/3/21.
  */
-public class XStateMachineImpl implements XStateMachine {
+public class XAsyncStateMachineImpl implements XAsyncStateMachine {
 
     private String mStartState;
     private String mEndState;
     private volatile String mCurrentState;// 当前状态
-    private final Object currentStateLock = new Object();// 针对
+    private final Object currentStateLock = new Object();// 针对mCurrentState的修改
     private Set<String> mStates;// 状态集合
     private WorkerRunnable mActionWorker;// 工作线程(负责等待和执行动作)
     private BlockingQueue<XAction> mActionQueue;// 未执行动作的缓存队列
@@ -22,7 +22,7 @@ public class XStateMachineImpl implements XStateMachine {
 
     private ExecutorService mThreadPool;
 
-    public XStateMachineImpl() {
+    public XAsyncStateMachineImpl() {
         mStates = new HashSet<String>();
         mCurrentState = null;
         mActionWorker = null;
@@ -138,19 +138,6 @@ public class XStateMachineImpl implements XStateMachine {
     }
 
     @Override
-    public synchronized boolean act(XAction[] actions) {
-        if (actions == null || actions.length == 0) {
-            return false;
-        }
-        for (XAction action : actions) {
-            // 加入动作缓存队列，等待被执行
-            if (!mActionQueue.offer(action))
-                return false;
-        }
-        return true;
-    }
-
-    @Override
     public synchronized boolean act(List<XAction> actions) {
         if (actions == null || actions.size() == 0) {
             return false;
@@ -207,11 +194,8 @@ public class XStateMachineImpl implements XStateMachine {
                     XAction action = mActionQueue.take();
                     final String preState = action.getPreState();
                     final String postState = action.getPostState();
-                    System.out.println("###WorkerRunnable taka an action!! " + action
-                            + ",preState=" + preState + ",postState=" + postState);
                     // 线程被暂停结束
                     if (!isRunning) {
-                        System.out.println("###WorkerRunnable cancel!! 1");
                         break;
                     }
                     // 检验该action的前置后置状态是否在此状态机中
@@ -230,29 +214,25 @@ public class XStateMachineImpl implements XStateMachine {
                     synchronized (currentStateLock) {// 与end()和reset()方法进行互斥(针对mCurrentState的修改)
                         // 线程被暂停结束
                         if (!isRunning) {
-                            System.out.println("###WorkerRunnable cancel!! 2");
                             break;
                         }
                         // 一旦action执行成功后，将当前状态改成后置状态
                         if (result) {
                             mCurrentState = postState;
-                            // 通知状态的监听者(TODO可以不直接回调，通过消息队列让实际回调在另一个线程)
+                            // 通知状态的监听者(可以不直接回调，通过消息队列让实际回调在另一个线程)
                             for (Listener listener : mListeners)
-                                listener.onState(postState, action, XStateMachineImpl.this);
+                                listener.onState(postState, action, XAsyncStateMachineImpl.this);
                             // 如果后置状态是IState.END，意味着状态机执行完毕，则停止整个状态机
-                            if (mEndState.equals(postState)) {
+                            if (mEndState != null && mEndState.equals(postState)) {
                                 terminate();
-                                XStateMachineImpl.this.pause();
-                                System.out.println("###StateMachine arrived end point!!");
+                                XAsyncStateMachineImpl.this.pause();
                             }
                         }
                     }
                 }
-                System.out.println("###WorkerRunnable finish!!");
             } catch (InterruptedException e) {
                 // blockingQueue阻塞被中断
                 e.printStackTrace();
-                System.out.println("###WorkerRunnable blockingQueue interrupted!!");
             }
         }
 
