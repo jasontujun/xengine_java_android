@@ -2,7 +2,7 @@ package com.tj.xengine.android.db;
 
 /**
  * SQLite的五种数据类型
- * Created by jason on 2016/4/16.
+ * Created by jasontujun on 2016/4/16.
  */
 public enum XDBDataType {
 

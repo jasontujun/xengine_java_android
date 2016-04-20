@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 表示数据表的接口。
  * 定义了表的名字和列，以及数据库记录和对象的转换方法。
- * Created by jason on 2016/4/16.
+ * Created by jasontujun on 2016/4/16.
  */
 public interface XDBTable<T> {
 

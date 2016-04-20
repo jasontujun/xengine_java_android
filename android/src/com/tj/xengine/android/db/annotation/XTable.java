@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * 数据库表的注解。
- * Created by jason on 2016/4/16.
+ * Created by jasontujun on 2016/4/16.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

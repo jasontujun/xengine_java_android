@@ -21,7 +21,7 @@ import java.util.concurrent.Future;
  * 对单个文件进行单线程下载的http下载任务。
  * 支持下载暂停后的断点续传;
  * 支持下载过出错后的重试。
- * Created by jason on 2015/10/29.
+ * Created by jasontujun on 2015/10/29.
  */
 public class XHttpDownloadTask extends XBaseMgrTaskExecutor<XDownloadBean> {
 

@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.List;
 
 /**
- * Created by jason on 2015/10/28.
+ * Created by jasontujun on 2015/10/28.
  */
 public class XHttpFileHandler implements XHttpHandler<File> {
 

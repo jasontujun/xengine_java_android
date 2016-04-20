@@ -7,7 +7,7 @@ import com.tj.xengine.core.data.annotation.XId;
 import java.util.Date;
 
 /**
- * Created by jason on 2016/4/16.
+ * Created by jasontujun on 2016/4/16.
  */
 @XTable(name = "book")
 public class Book {

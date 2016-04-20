@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * 用于对实现了XWithId接口的数据源，让数据源和数据库实时同步(在数据源发生增删操作时)。
  * 使用时只需对数据源注册XDataChangeListener即可。
- * Created by jason on 2016/4/17.
+ * Created by jasontujun on 2016/4/17.
  */
 public class XAsyncDatabaseListener<T> implements XWithId.Listener<T> {
 

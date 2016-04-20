@@ -8,7 +8,7 @@ import org.json.JSONArray;
 import java.io.InputStream;
 
 /**
- * Created by jason on 2016/4/19.
+ * Created by jasontujun on 2016/4/19.
  */
 public class XJsonArrayHandler implements XHttpHandler<JSONArray> {
     @Override

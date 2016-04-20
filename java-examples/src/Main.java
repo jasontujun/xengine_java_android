@@ -7,7 +7,7 @@ import com.tj.xengine.java.network.http.java.XJavaHttpClient;
 import java.io.File;
 
 /**
- * Created by jason on 2015/10/28.
+ * Created by jasontujun on 2015/10/28.
  */
 public class Main {
 

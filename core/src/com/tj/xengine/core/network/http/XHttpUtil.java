@@ -9,7 +9,7 @@ import java.net.URL;
 
 /**
  * XHttp的工具类。
- * Created by jason on 2015/10/30.
+ * Created by jasontujun on 2015/10/30.
  */
 public abstract class XHttpUtil {
 

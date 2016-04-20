@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 数据库管理帮助类。
- * Created by jason on 2016/4/16.
+ * Created by jasontujun on 2016/4/16.
  */
 public class XDatabase {
 

@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * 实现XDBTable接口的实现类。
  * 注意：模板实例化的数据类，必须含有XTable的Annotation，以及有一个无参数的构造函数。
- * Created by jason on 2016/4/16.
+ * Created by jasontujun on 2016/4/16.
  */
 public final class XDBTableImpl<T> implements XDBTable<T> {
 

@@ -4,7 +4,7 @@ import com.tj.xengine.core.network.http.XHttpResponse;
 
 /**
  * 对Http返回数据流处理的接口。
- * Created by jason on 2015/10/28.
+ * Created by jasontujun on 2015/10/28.
  */
 public interface XHttpHandler<T> {
 

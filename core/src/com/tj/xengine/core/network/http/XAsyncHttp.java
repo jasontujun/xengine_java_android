@@ -6,7 +6,7 @@ import com.tj.xengine.core.network.http.handler.XHttpHandler;
  * 异步Http客户端接口。
  * 简化了XHttp通信的调用方式：在主线程调用XAsyncHttp的接口，
  * 实际是在异步线程执行http请求，并返回主线程执行XAsyncHttp.Listener的相关回调。
- * Created by jason on 2016/4/19.
+ * Created by jasontujun on 2016/4/19.
  */
 public interface XAsyncHttp {
 

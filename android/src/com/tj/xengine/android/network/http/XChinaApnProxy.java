@@ -14,7 +14,7 @@ import com.tj.xengine.core.network.http.XProxy;
  * 针对中国手机用户APN接入点的Http代理类。
  * APN(Access Point Name)接入点，是指一种网络接入技术，是通过手机上网时必须配置的一个参数。
  * 注意：只有当前的APN为WAP时，网络通信才需要设置对应的代理；非WAP时不需要设置代理。
- * Created by jason on 2015/10/27.
+ * Created by jasontujun on 2015/10/27.
  */
 public class XChinaApnProxy implements XProxy{
 

@@ -2,7 +2,7 @@ package com.tj.xengine.core.network.http;
 
 /**
  * Http代理接口
- * Created by jason on 2015/10/26.
+ * Created by jasontujun on 2015/10/26.
  */
 public interface XProxy {
 

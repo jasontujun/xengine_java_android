@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by jason on 2016/4/16.
+ * Created by jasontujun on 2016/4/16.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

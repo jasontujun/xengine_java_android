@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * Http请求参数和相关设置的接口。
- * Created by jason on 2015/10/26.
+ * Created by jasontujun on 2015/10/26.
  */
 public final class XHttpConfig {
 

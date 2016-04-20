@@ -6,7 +6,7 @@ import android.database.Cursor;
 /**
  * 表示数据表的列的接口。
  * 定义了列的相关属性，以及数据库列和对象字段的转换方法。
- * Created by jason on 2016/4/16.
+ * Created by jasontujun on 2016/4/16.
  */
 public interface XDBColumn {
 

@@ -17,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 简单的Http下载管理器。
- * Created by jason on 2015/10/29.
+ * Created by jasontujun on 2015/10/29.
  */
 public class XHttpDownloader {
 

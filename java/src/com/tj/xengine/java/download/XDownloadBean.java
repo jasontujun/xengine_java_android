@@ -5,7 +5,7 @@ import com.tj.xengine.core.toolkit.task.XTaskBean;
 import java.io.Serializable;
 
 /**
- * Created by jason on 2015/10/29.
+ * Created by jasontujun on 2015/10/29.
  */
 public class XDownloadBean implements XTaskBean, Serializable {
 

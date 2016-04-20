@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 通过Handler调度回ui主线程的数据源监听器抽象类。
  * 待实现的抽象方法都运行在ui线程。
- * Created by jason on 2016/4/18.
+ * Created by jasontujun on 2016/4/18.
  */
 public abstract class XHandlerDataSourceListener<T> implements XListDataSource.Listener<T> {
 

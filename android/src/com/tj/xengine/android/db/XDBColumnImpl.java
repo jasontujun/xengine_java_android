@@ -11,7 +11,7 @@ import java.util.Date;
 
 /**
  * 实现XDBColumn接口的实现类。
- * Created by jason on 2016/4/16.
+ * Created by jasontujun on 2016/4/16.
  */
 public final class XDBColumnImpl implements XDBColumn {
 

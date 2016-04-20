@@ -6,7 +6,7 @@ import com.tj.xengine.core.utils.XStringUtil;
 import java.io.InputStream;
 
 /**
- * Created by jason on 2015/10/28.
+ * Created by jasontujun on 2015/10/28.
  */
 public class XHttpStringHandler implements XHttpHandler<String> {
 

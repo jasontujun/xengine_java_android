@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 继承自XListIdDataSourceImpl的带数据库支持的数据源。
- * Created by jason on 2016/4/16.
+ * Created by jasontujun on 2016/4/16.
  */
 public class XListIdDBDataSourceImpl<T>
         extends XListIdDataSourceImpl<T> implements XWithDatabase<T> {

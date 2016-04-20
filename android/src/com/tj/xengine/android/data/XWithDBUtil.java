@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by jason on 2016/4/17.
+ * Created by jasontujun on 2016/4/17.
  */
 public abstract class XWithDBUtil {
 

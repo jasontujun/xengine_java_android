@@ -8,7 +8,7 @@ import com.tj.xengine.core.network.http.XHttpResponse;
 import com.tj.xengine.core.network.http.handler.XHttpHandler;
 
 /**
- * Created by jason on 2016/4/19.
+ * Created by jasontujun on 2016/4/19.
  */
 public class XAsyncHttpClient implements XAsyncHttp {
 
