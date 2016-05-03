@@ -250,12 +250,18 @@ public class XListIdDataSourceImpl<T> implements XListDataSource<T>, XWithId<T> 
 
     @Override
     public void registerListener(XListDataSource.Listener<T> listener) {
-        if (!mListeners.contains(listener) && listener instanceof XWithId.Listener)
+        if (!(listener instanceof XWithId.Listener)) {
+            throw new IllegalArgumentException("listener must be XWithId.Listener.");
+        }
+        if (!mListeners.contains(listener))
             mListeners.add((XWithId.Listener<T>) listener);
     }
 
     @Override
     public void unregisterListener(XListDataSource.Listener<T> listener) {
+        if (!(listener instanceof XWithId.Listener)) {
+            throw new IllegalArgumentException("listener must be XWithId.Listener.");
+        }
         mListeners.remove(listener);
     }
 

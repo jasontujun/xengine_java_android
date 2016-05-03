@@ -116,53 +116,46 @@ public abstract class XStringUtil {
         return sb.toString();
     }
 
-    public static String date2str(long time) {
-        return date2str(new Date(time));
+    public static String date2str(long time, String separator) {
+        return date2str(new Date(time), separator);
     }
 
-    public static String date2str(Date date) {
+    public static String date2str(Date date, String separator) {
         if (date == null)
             return null;
 
         return date2str(date.getYear() + 1900, date.getMonth() + 1,
-                date.getDate(), date.getHours(), date.getMinutes());
+                date.getDate(), date.getHours(), date.getMinutes(), separator);
     }
 
-    public static String date2str(int year, int month, int day, int hour, int minute) {
-        String hourStr = "" + hour;
-        String minStr = "" + minute;
-        if (hour < 10) {
-            hourStr = "0" + hourStr;
+    public static String date2Str(int year, int month, int day, String separator) {
+        return date2str(year, month, day, -1, -1, separator);
+    }
+
+    public static String date2str(int year, int month, int day,
+                                  int hour, int minute, String separator) {
+        if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+            String hourStr = hour < 10 ? "0" + String.valueOf(hour) : String.valueOf(hour);
+            String minStr = minute < 10 ? "0" + String.valueOf(minute) : String.valueOf(minute);
+            return year + separator + month + separator + day + " " + hourStr + ":" + minStr;
+        } else {
+            return year + separator + month + separator + day;
         }
-        if (minute < 10) {
-            minStr = "0" +minStr;
-        }
-        return year + "-" + month + "-" + day + " " + hourStr + ":" + minStr;
     }
 
 
-
-    public static String date2calendarStr(Date date) {
-        return date2calendarStr(date.getYear() + 1900, date.getMonth() + 1, date.getDate());
-    }
-
-    public static String date2calendarStr(int year, int month, int day) {
-        return year+"-"+month+"-"+day;
-    }
-
-
-    public static String calendar2str(Calendar c) {
+    public static String calendar2str(Calendar c, String separator) {
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH) + 1;
         int day = c.get(Calendar.DAY_OF_MONTH);
-        return year + "-" + month + "-" + day;
+        return year + separator + month + separator + day;
     }
 
-    public static Calendar str2calendar(String str) {
+    public static Calendar str2calendar(String str, String separator) {
         if (isEmpty(str))
             return null;
 
-        String[] strList = str.split("-");
+        String[] strList = str.split(separator);
         if (strList.length != 3 || !isNumber(strList[0]) ||
                 !isNumber(strList[1]) || !isNumber(strList[2]))
             return null;
@@ -259,8 +252,8 @@ public abstract class XStringUtil {
     }
 
     private static final float KB = 1024;
-    private static final float MB = 1024*1024;
-    private static final float GB = 1024*1024*1024;
+    private static final float MB = 1024 * 1024;
+    private static final float GB = 1024 * 1024 * 1024;
     /**
      * 将文件大小转换
      * @param size 文件大小，单位:byte
@@ -277,59 +270,18 @@ public abstract class XStringUtil {
             result = size;
             unit = "B";
         } else if (size < MB) {
-            result = size/KB;
+            result = size / KB;
             unit = "KB";
         } else if (size < GB) {
-            result = size/MB;
+            result = size / MB;
             unit = "MB";
         } else {
-            result = size/GB;
+            result = size / GB;
             unit = "GB";
         }
         BigDecimal bg = new BigDecimal(result);
         float f1 = bg.setScale(scale, BigDecimal.ROUND_HALF_UP).floatValue();
         return f1 + unit;
-    }
-
-    /**
-     * 将毫秒转换为 "*日*小时*分钟*秒"
-     * @param mss 要转换的毫秒数
-     * @return
-     */
-    public static String formatDuring(long mss) {
-        long days = mss / (1000 * 60 * 60 * 24);
-        long hours = (mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);
-        long minutes = (mss % (1000 * 60 * 60)) / (1000 * 60);
-        long seconds = (mss % (1000 * 60)) / 1000;
-
-        if (days != 0) {
-            if (hours > 12) {
-                return days+"天+";
-            } else {
-                return days+"天";
-            }
-        } else if(hours !=0) {
-            if (minutes >30) {
-                return hours + "小时+";
-            } else {
-                return hours + "小时";
-            }
-        } else if (minutes != 0) {
-            return minutes + "分钟";
-        } else {
-            return seconds + "秒";
-        }
-    }
-
-    /**
-     * 将两日期的间隔转换为 "*日*小时*分钟*秒"
-     * @param begin 时间段的开始
-     * @param end   时间段的结束
-     * @return  输入的两个Date类型数据之间的时间间格用
-     * * days * hours * minutes * seconds的格式展示
-     */
-    public static String formatDuring(Date begin, Date end) {
-        return formatDuring(end.getTime() - begin.getTime());
     }
 
     /**
