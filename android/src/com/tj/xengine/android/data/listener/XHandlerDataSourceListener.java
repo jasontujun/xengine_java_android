@@ -57,7 +57,7 @@ public abstract class XHandlerDataSourceListener<T> implements XListDataSource.L
                 case MSG_ON_DELETE_ALL:
                     if (outer.get() != null) {
                         List<T> items = (List<T>) msg.obj;
-                        outer.get().onDeleteInUI(items);
+                        outer.get().onDeleteAllInUI(items);
                     }
                     break;
                 default:
@@ -104,5 +104,5 @@ public abstract class XHandlerDataSourceListener<T> implements XListDataSource.L
     public abstract void onAddInUI(T item);
     public abstract void onAddAllInUI(List<T> items);
     public abstract void onDeleteInUI(T item);
-    public abstract void onDeleteInUI(List<T> items);
+    public abstract void onDeleteAllInUI(List<T> items);
 }
