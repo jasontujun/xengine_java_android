@@ -1,4 +1,4 @@
-package com.tj.xengine.java.download;
+package com.tj.xengine.core.network.download;
 
 import com.tj.xengine.core.toolkit.task.XTaskBean;
 
@@ -14,6 +14,7 @@ public class XDownloadBean implements XTaskBean, Serializable {
     private String url;
     private String folder;
     private String fileName;
+    private String downloadingSuffix;
 
     private int status;
     private int type;
@@ -87,5 +88,13 @@ public class XDownloadBean implements XTaskBean, Serializable {
 
     public void setTotalSize(long totalSize) {
         this.totalSize = totalSize;
+    }
+
+    public String getDownloadingSuffix() {
+        return downloadingSuffix;
+    }
+
+    public void setDownloadingSuffix(String downloadingSuffix) {
+        this.downloadingSuffix = downloadingSuffix;
     }
 }

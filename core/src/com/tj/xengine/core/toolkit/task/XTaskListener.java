@@ -45,6 +45,7 @@ public interface XTaskListener<T extends XTaskBean> {
      * 执行失败结束的回调函数
      * @param task
      * @param errorCode
+     * @param retry 是否尝试再次执行
      */
     void onError(T task, String errorCode, boolean retry);
 }

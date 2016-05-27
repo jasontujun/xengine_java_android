@@ -1,6 +1,6 @@
 import com.tj.xengine.core.network.http.*;
 import com.tj.xengine.core.network.http.handler.XHttpStringHandler;
-import com.tj.xengine.java.download.XHttpDownloader;
+import com.tj.xengine.java.network.download.XHttpDownloader;
 import com.tj.xengine.java.network.http.apache.XApacheHttpClient;
 import com.tj.xengine.java.network.http.java.XJavaHttpClient;
 
