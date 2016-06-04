@@ -13,8 +13,8 @@ public class Main {
 
     public static void main(String[] args) {
 //        testHttp();
-//        testDownloadFile();
-        testUploadFile();
+        testDownloadFile();
+//        testUploadFile();
 //        testContentDesposition();
     }
 

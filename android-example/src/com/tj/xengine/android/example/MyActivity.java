@@ -64,12 +64,14 @@ public class MyActivity extends Activity {
                 book.price = Integer.parseInt(inputPrice.getText().toString());
                 book.publish = new Date();
 
-                XListDataSource<Book> source = (XListDataSource<Book>) XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
+                XListDataSource<Book> source = (XListDataSource<Book>)
+                        XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
                 source.add(book);
             }
         });
 
-        XListIdDBDataSourceImpl<Book> s2 = (XListIdDBDataSourceImpl<Book>) XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
+        XListIdDBDataSourceImpl<Book> s2 = (XListIdDBDataSourceImpl<Book>)
+                XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
         if (myAdapter == null) {
             myAdapter = new MyAdapter(s2);
         }
@@ -84,7 +86,8 @@ public class MyActivity extends Activity {
                     } else {
                         XLog.d(TAG, "saveToDatabase error!");
                     }
-                    XListIdDBDataSourceImpl<Book> source = (XListIdDBDataSourceImpl<Book>) XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
+                    XListIdDBDataSourceImpl<Book> source = (XListIdDBDataSourceImpl<Book>)
+                            XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
                     source.unregisterDbListener(mDbListener);
                 }
 
@@ -133,7 +136,7 @@ public class MyActivity extends Activity {
                 }
 
                 @Override
-                public void onDeleteInUI(List<Book> items) {
+                public void onDeleteAllInUI(List<Book> items) {
                     XLog.d(TAG, "onDeleteAll. size=" + items.size());
                     myAdapter.notifyDataSetChanged();
                 }
@@ -175,7 +178,8 @@ public class MyActivity extends Activity {
     protected void onResume() {
         XLog.d(TAG, "onResume()!");
         super.onResume();
-        XWithDatabase<Book> source = (XWithDatabase<Book>) XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
+        XWithDatabase<Book> source = (XWithDatabase<Book>)
+                XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
         source.loadFromDatabase();
     }
 
@@ -189,7 +193,8 @@ public class MyActivity extends Activity {
     protected void onPause() {
         XLog.d(TAG, "onPause()!");
         super.onPause();
-//        XListIdDBDataSourceImpl<Book> source = (XListIdDBDataSourceImpl<Book>) XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
+//        XListIdDBDataSourceImpl<Book> source = (XListIdDBDataSourceImpl<Book>)
+//                XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
 //        source.saveToDatabase();
     }
 
@@ -203,7 +208,8 @@ public class MyActivity extends Activity {
     public void onDestroy() {
         XLog.d(TAG, "onDestroy()!");
         super.onDestroy();
-        XListIdDBDataSourceImpl<Book> source = (XListIdDBDataSourceImpl<Book>) XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
+        XListIdDBDataSourceImpl<Book> source = (XListIdDBDataSourceImpl<Book>)
+                XDefaultDataRepo.getInstance().getSource(SOURCE_NAME);
         source.unregisterDbListener(mDbListener);
         source.unregisterListener(mDataSourceListener);
         source.unregisterListener(mSyncDbListener);

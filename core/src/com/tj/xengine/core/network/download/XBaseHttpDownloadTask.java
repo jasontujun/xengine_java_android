@@ -145,8 +145,17 @@ public abstract class XBaseHttpDownloadTask extends XBaseMgrTaskExecutor<XDownlo
         return bean.getUrl();
     }
 
+    /**
+     * 下载成功后进行的自定义处理。
+     * 子类可以重写此方法。
+     * @return 如果处理成功，返回null；否则返回errorCode.
+     */
+    protected String postDownload(XDownloadBean bean) {
+        return null;
+    }
+
     @Override
-    protected boolean onStart() {
+    protected final boolean onStart() {
         if (mRunnable != null)
             return false;
 
@@ -158,7 +167,7 @@ public abstract class XBaseHttpDownloadTask extends XBaseMgrTaskExecutor<XDownlo
     }
 
     @Override
-    protected boolean onPause() {
+    protected final boolean onPause() {
         if (mRunnable == null)
             return false;
 
@@ -168,7 +177,7 @@ public abstract class XBaseHttpDownloadTask extends XBaseMgrTaskExecutor<XDownlo
     }
 
     @Override
-    protected boolean onAbort() {
+    protected final boolean onAbort() {
         if (mRunnable != null) {
             mRunnable.cancel();
             mRunnable = null;
@@ -177,13 +186,13 @@ public abstract class XBaseHttpDownloadTask extends XBaseMgrTaskExecutor<XDownlo
     }
 
     @Override
-    protected boolean onEndSuccess() {
+    protected final boolean onEndSuccess() {
         mRunnable = null;
         return true;
     }
 
     @Override
-    protected boolean onEndError(String errorCode, boolean retry) {
+    protected final boolean onEndError(String errorCode, boolean retry) {
         mRunnable = null;
         return true;
     }
@@ -514,7 +523,13 @@ public abstract class XBaseHttpDownloadTask extends XBaseMgrTaskExecutor<XDownlo
                     log("下载请求[" + mUrl + "]下载结束，成功!最终下载文件为:" +
                             (result ? finalFile.getAbsolutePath() : mDownloadingFile.getAbsolutePath()));
                 }
-                XBaseHttpDownloadTask.this.endSuccess();
+                // 执行自定义的后续处理逻辑
+                errorCode = postDownload(bean);
+                if (XStringUtil.isEmpty(errorCode)) {
+                    XBaseHttpDownloadTask.this.endSuccess();
+                } else {
+                    XBaseHttpDownloadTask.this.endError(errorCode, backToDownloadMgr());
+                }
             } else {
                 log("下载请求[" + mUrl + "]下载失败了，errorCode:" + errorCode);
                 if (ERROR_NO_SPACE.equals(errorCode) || ERROR_IO_ERROR.equals(errorCode)) {
