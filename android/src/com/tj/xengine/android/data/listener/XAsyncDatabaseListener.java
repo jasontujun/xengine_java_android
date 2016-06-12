@@ -125,12 +125,11 @@ public class XAsyncDatabaseListener<T> implements XWithId.Listener<T> {
             @Override
             protected Void doInBackground(Object[] objects) {
                 XDatabase dbHelper = XDatabase.getInstance();
-                String[] ids = new String[items.size()];
-                for (int i = 0; i < items.size(); i++) {
-                    ids[i] = mDataSource.getId(items.get(i));
-                }
                 SQLiteDatabase db = dbHelper.openDatabase();
-                db.delete(table.getName(), idColumnName + "=?", ids);
+                for (T item : items) {
+                    db.delete(table.getName(), idColumnName + "=?",
+                            new String[]{mDataSource.getId(item)});
+                }
                 dbHelper.closeDatabase();
                 return null;
             }
