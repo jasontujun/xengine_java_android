@@ -1,7 +1,6 @@
 package com.tj.xengine.android.network.http;
 
 import android.os.AsyncTask;
-import com.tj.xengine.core.network.http.XAsyncHttp;
 import com.tj.xengine.core.network.http.XHttp;
 import com.tj.xengine.core.network.http.XHttpRequest;
 import com.tj.xengine.core.network.http.XHttpResponse;
@@ -29,32 +28,35 @@ public class XAsyncHttpClient implements XAsyncHttp {
     }
 
     @Override
-    public void execute(String url, XHttpRequest.Method method, Listener listener) {
-        execute(newRequest(url, method), listener);
+    public AsyncTask execute(String url, XHttpRequest.Method method, Listener listener) {
+        return execute(newRequest(url, method), listener);
     }
 
     @Override
-    public void execute(final XHttpRequest request, final Listener listener) {
-        execute(request, null, listener);
+    public AsyncTask execute(final XHttpRequest request, final Listener listener) {
+        return execute(request, null, listener);
     }
 
     @Override
-    public <T> void execute(String url, XHttpRequest.Method method,
+    public <T> AsyncTask execute(String url, XHttpRequest.Method method,
                             XHttpHandler<T> handler, Listener<T> listener) {
-        execute(newRequest(url, method), handler, listener);
+        return execute(newRequest(url, method), handler, listener);
     }
 
     @Override
-    public <T> void execute(final XHttpRequest request,
+    public <T> AsyncTask execute(final XHttpRequest request,
                             final XHttpHandler<T> handler,
                             final Listener<T> listener) {
         if (request == null)
-            return;
-        new AsyncTask<Void, Void, XHttpResponse>() {
+            return null;
+        return new AsyncTask<Void, Void, XHttpResponse>() {
             private T handlerResult;
             @Override
             protected XHttpResponse doInBackground(Void... param) {
                 XHttpResponse res = mHttpClient.execute(request);
+                if (isCancelled()) {
+                    return null;
+                }
                 // 在异步线程中调用XHttpHandler
                 if (handler != null && res != null &&
                         200 <= res.getStatusCode() && res.getStatusCode() < 300) {
@@ -76,6 +78,12 @@ public class XAsyncHttpClient implements XAsyncHttp {
                         }
                     }
                 }
+            }
+
+            @Override
+            protected void onCancelled(XHttpResponse result) {
+                if (listener != null)
+                    listener.onCancelled();
             }
         }.execute();
     }

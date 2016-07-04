@@ -1,5 +1,8 @@
-package com.tj.xengine.core.network.http;
+package com.tj.xengine.android.network.http;
 
+import android.os.AsyncTask;
+import com.tj.xengine.core.network.http.XHttpRequest;
+import com.tj.xengine.core.network.http.XHttpResponse;
 import com.tj.xengine.core.network.http.handler.XHttpHandler;
 
 /**
@@ -11,6 +14,8 @@ import com.tj.xengine.core.network.http.handler.XHttpHandler;
 public interface XAsyncHttp {
 
     interface Listener<T> {
+        void onCancelled();
+
         void onNetworkError();
 
         void onFinishError(XHttpResponse response);
@@ -39,14 +44,14 @@ public interface XAsyncHttp {
      * @param method http请求的类型
      * @param listener http执行结果的回调
      */
-    void execute(String url, XHttpRequest.Method method, Listener listener);
+    AsyncTask execute(String url, XHttpRequest.Method method, Listener listener);
 
     /**
      * 执行http请求。
      * @param request http请求对象
      * @param listener http执行结果的回调
      */
-    void execute(XHttpRequest request, Listener listener);
+    AsyncTask execute(XHttpRequest request, Listener listener);
 
     /**
      * 执行http请求。
@@ -56,7 +61,7 @@ public interface XAsyncHttp {
      * @param listener http执行结果的回调
      * @param <T> http执行结果的类型，取决于XHttpHandler的类型。
      */
-    <T> void execute(String url, XHttpRequest.Method method,
+    <T> AsyncTask execute(String url, XHttpRequest.Method method,
                            XHttpHandler<T> handler, Listener<T> listener);
 
     /**
@@ -66,5 +71,5 @@ public interface XAsyncHttp {
      * @param listener http执行结果的回调
      * @param <T> http执行结果的类型，取决于XHttpHandler的类型。
      */
-    <T> void execute(XHttpRequest request, XHttpHandler<T> handler, Listener<T> listener);
+    <T> AsyncTask execute(XHttpRequest request, XHttpHandler<T> handler, Listener<T> listener);
 }
